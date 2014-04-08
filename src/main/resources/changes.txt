@@ -1,0 +1,2 @@
+added max-post-size to 'http-listener'
+	<http-listener name="default" socket-binding="http" max-post-size="52428800"/>

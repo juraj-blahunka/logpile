@@ -1,0 +1,14 @@
+# Eclipse metadata.
+.settings
+.classpath
+.project
+
+# IntelliJ IDEA metadata
+*.iml
+.idea
+
+# Maven output directory.
+target
+
+# Example data folder
+data-example
