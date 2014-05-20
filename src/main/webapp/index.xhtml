@@ -1,135 +1,98 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
 	  xmlns:h="http://xmlns.jcp.org/jsf/html"
-	  xmlns:c="http://java.sun.com/jsp/jstl/core">
-<h:head>
+	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-	<title>LogPile!</title>
-
-	<h:outputScript library="js" name="jquery-2.1.0.js"/>
-
-	<style type="text/css">
-		html {
-			font-family: "Arial", "Helvetica", sans-serif;
-			color: #222;
-		}
-
-		code {
-			font-family: "Consolas", monospace;
-			font-size: 12px;
-		}
-
-		pre {
-			overflow: auto;
-			white-space: pre-wrap;
-		}
-
-		table {
-			border-collapse: collapse;
-			width: 100%;
-		}
-
-		td, th {
-			border: 1px solid #666;
-		}
-
-		.unique-messages {
-			display: none;
-		}
-
-		.full-stack-traces {
-			display: none;
-			margin-left: 50px;
-		}
-	</style>
-
-</h:head>
 <h:body>
-	<c:if test="#{indexBean.errors == null}">
-		<h3>Select Log file</h3>
-		<h:form id="form" enctype="multipart/form-data">
-			<h:inputFile id="file" value="#{indexBean.file}"/>
-			<h:commandButton value="Upload" action="#{indexBean.upload}"/>
-		</h:form>
-	</c:if>
 
-	<c:if test="#{indexBean.errors != null}">
-		<h:link value="Select file" outcome="index"/>
+	<ui:composition template="WEB-INF/master.xhtml">
 
-		<h3>Parsed logs</h3>
-		<table>
-			<thead>
-			<tr>
-				<th>Total</th>
-				<th>Unique</th>
-				<th>Exception</th>
-				<th>Origin</th>
-				<th>Action</th>
-			</tr>
-			</thead>
-			<tbody>
+		<ui:define name="content">
 
-			<c:forEach items="#{indexBean.errors}" var="summary">
-				<tr>
-					<td>#{summary.logs.numberOfTotalLogMessages}</td>
-					<td>#{summary.logs.numberOfUniqueLogMessages}</td>
-					<td>
-						<strong>
-							<h:outputText value="#{summary.rootExceptionCause.simpleName} "
-										  rendered="#{summary.rootExceptionCause != null}"/>
-						</strong>
-					</td>
-					<td><code>#{summary.exceptionOriginAtLine.referenceRepresentation}</code></td>
-					<td>
-						<button class="show-hide-unique-message">Show</button>
-					</td>
-				</tr>
+			<c:if test="#{indexBean.dataPresent}">
 
-				<tr class="unique-messages">
-					<td colspan="5">
-						<c:forEach items="#{summary.logs.uniqueMessageStrings}" var="message">
+				<h3>Parsed logs</h3>
 
-							<pre><code>#{message}</code></pre>
+				<!-- Stacktraces table -->
 
-							<a href="#"
-							   class="show-hide-full-stack-traces">+ Full stack traces (#{summary.logs.getNumberOfStatements(message)})</a>
+				<table>
+					<thead>
+					<tr>
+						<th>Total</th>
+						<th>Unique</th>
+						<th>Exception</th>
+						<th>Origin</th>
+						<th>Action</th>
+					</tr>
+					</thead>
+					<tbody>
 
-							<div class="full-stack-traces">
-								<c:forEach items="#{summary.logs.first10LogStatements(message)}" var="statement">
-									<c:set var="stackTrace" value="#{statement.fullStackTrace}"/>
+					<c:forEach items="#{indexBean.errors}" var="summary">
+						<tr>
+							<td>#{summary.logs.numberOfTotalLogMessages}</td>
+							<td>#{summary.logs.numberOfUniqueLogMessages}</td>
+							<td>
+								<strong>
+									<h:outputText value="#{summary.rootExceptionCause.simpleName} "
+												  rendered="#{summary.rootExceptionCause != null}"/>
+								</strong>
+							</td>
+							<td><code>#{summary.exceptionOriginAtLine.referenceRepresentation}</code></td>
+							<td>
+								<button class="show-hide-unique-message">Show</button>
+							</td>
+						</tr>
 
-									<div class="code-container">
-										<pre><code>#{stackTrace.lines}</code></pre>
+						<tr class="unique-messages">
+							<td colspan="5">
+								<c:forEach items="#{summary.logs.uniqueMessageStrings}" var="message">
+
+									<pre><code>#{message}</code></pre>
+
+									<a href="#"
+									   class="show-hide-full-stack-traces">+ Full stack traces (#{summary.logs.getNumberOfStatements(message)})</a>
+
+									<div class="full-stack-traces">
+										<c:forEach items="#{summary.logs.first10LogStatements(message)}"
+												   var="statement">
+											<c:set var="stackTrace" value="#{statement.fullStackTrace}"/>
+
+											<div class="code-container">
+												<pre><code>#{stackTrace.lines}</code></pre>
+											</div>
+										</c:forEach>
 									</div>
+
 								</c:forEach>
-							</div>
+							</td>
+						</tr>
 
-						</c:forEach>
-					</td>
-				</tr>
+					</c:forEach>
 
-			</c:forEach>
+					</tbody>
+				</table>
 
-			</tbody>
-		</table>
+			</c:if>
 
-	</c:if>
+			<script type="text/javascript">
+				$(function() {
+					$(".show-hide-unique-message").click(function() {
+						$(this).closest("tr").next().toggle()
+						$(this).text($(this).text() == "Show" ? "Hide" : "Show");
+						return false;
+					});
+					$(".show-hide-full-stack-traces").click(function() {
+						$(this).next(".full-stack-traces").toggle()
+						return false;
+					});
+				});
+			</script>
 
-	<script type="text/javascript">
-		$(function () {
-			$(".show-hide-unique-message").click(function () {
-				$(this).closest("tr").next().toggle()
-				$(this).text($(this).text() == "Show" ? "Hide" : "Show");
-				return false;
-			});
-			$(".show-hide-full-stack-traces").click(function () {
-				$(this).next(".full-stack-traces").toggle()
-				return false;
-			});
-		});
-	</script>
+		</ui:define>
+
+	</ui:composition>
 
 </h:body>
 </html>

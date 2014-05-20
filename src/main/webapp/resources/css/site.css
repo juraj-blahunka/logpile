@@ -1,0 +1,32 @@
+html {
+	font-family: "Arial", "Helvetica", sans-serif;
+	color: #222;
+}
+
+code {
+	font-family: "Consolas", monospace;
+	font-size: 12px;
+}
+
+pre {
+	overflow: auto;
+	white-space: pre-wrap;
+}
+
+table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+td, th {
+	border: 1px solid #666;
+}
+
+.unique-messages {
+	display: none;
+}
+
+.full-stack-traces {
+	display: none;
+	margin-left: 50px;
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:h="http://xmlns.jcp.org/jsf/html"
+	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+<head jsf:id="head">
+
+	<title>LogPile!</title>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+
+	<!-- CSS -->
+	<link type="text/css" jsf:name="css/site.css" jsf:target="head"></link>
+
+	<!-- JavaScript -->
+	<script jsf:name="js/jquery-2.1.0.js" jsf:target="body"></script>
+
+</head>
+<body jsf:id="body">
+
+<header>
+	<c:if test="#{indexBean.dataPresent}">
+		<a jsf:outcome="index">Select file</a>
+	</c:if>
+
+	<c:if test="#{!indexBean.dataPresent}">
+		<h3>Select Log file</h3>
+		<h:form id="form" enctype="multipart/form-data">
+			<h:inputFile id="file" value="#{indexBean.file}"/>
+			<h:commandButton value="Upload" action="#{indexBean.upload}"/>
+		</h:form>
+	</c:if>
+</header>
+
+<div id="content">
+	<ui:insert name="content"></ui:insert>
+</div>
+
+</body>
+</html>

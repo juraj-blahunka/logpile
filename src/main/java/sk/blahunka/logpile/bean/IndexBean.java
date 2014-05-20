@@ -67,4 +67,8 @@ public class IndexBean {
 		return errors;
 	}
 
+	public boolean isDataPresent() {
+		return errors != null;
+	}
+
 }
