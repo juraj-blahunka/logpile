@@ -1,5 +1,9 @@
 package sk.blahunka.logpile.dto;
 
+/**
+ * Work in progress.
+ * Planned to use for line numbering of the whole stacktrace.
+ */
 public class FullStackTrace {
 
 	private final String lines;

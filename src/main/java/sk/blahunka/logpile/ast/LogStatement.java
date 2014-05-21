@@ -6,6 +6,10 @@ import sk.blahunka.logpile.dto.FullStackTrace;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Usage is very general (can be DEBUG, INFO, ERROR), but has all the attributes necessary for ERROR.
+ * It's the root collection of this package.
+ */
 public class LogStatement {
 
 	private final LocalTime time;
@@ -46,17 +50,17 @@ public class LogStatement {
 		causedBies.add(causedBy);
 	}
 
-	// TODO verify this works correctly
 	public void addMultiLineMessage(String message) {
 		this.message += "\n" + message;
 	}
 
+	// TODO not finished and used yet
 	public FullStackTrace getFullStackTrace() {
 		StringBuilder sb = new StringBuilder();
 		String ls = System.lineSeparator();
 
 		sb.append(time).append(" ").append(level)
-				.append(" (").append(clazz.getName()).append(")")
+				.append(" (").append(clazz.getFullyQualifiedName()).append(")")
 				.append(" ").append(message)
 				.append(ls);
 

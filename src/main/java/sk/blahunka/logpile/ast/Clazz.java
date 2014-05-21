@@ -7,19 +7,19 @@ public class Clazz {
 	private static final Pattern BY_DOTS =
 			Pattern.compile("\\.");
 
-	private final String name;
+	private final String fullyQualifiedName;
 
-	public Clazz(String name) {
-		this.name = name;
+	public Clazz(String fullyQualifiedName) {
+		this.fullyQualifiedName = fullyQualifiedName;
 	}
 
 	public String getSimpleName() {
-		String[] strings = BY_DOTS.split(name);
+		String[] strings = BY_DOTS.split(fullyQualifiedName);
 		return strings[strings.length - 1];
 	}
 
-	public String getName() {
-		return name;
+	public String getFullyQualifiedName() {
+		return fullyQualifiedName;
 	}
 
 	@Override
@@ -29,20 +29,21 @@ public class Clazz {
 
 		Clazz clazz = (Clazz) o;
 
-		if (name != null ? !name.equals(clazz.name) : clazz.name != null) return false;
+		if (fullyQualifiedName != null ? !fullyQualifiedName.equals(clazz.fullyQualifiedName) : clazz.fullyQualifiedName != null)
+			return false;
 
 		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
+		return fullyQualifiedName != null ? fullyQualifiedName.hashCode() : 0;
 	}
 
 	@Override
 	public String toString() {
 		return "Clazz{" +
-				"name='" + name + '\'' +
+				"name='" + fullyQualifiedName + '\'' +
 				'}';
 	}
 

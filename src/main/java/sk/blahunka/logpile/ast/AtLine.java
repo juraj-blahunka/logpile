@@ -13,7 +13,7 @@ public class AtLine {
 	}
 
 	public String getReferenceRepresentation() {
-		return clazz.getName() + "#" + method + " (" + source + ")";
+		return clazz.getFullyQualifiedName() + "#" + method + " (" + source + ")";
 	}
 
 	public Clazz getClazz() {

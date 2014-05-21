@@ -30,7 +30,7 @@ public class CausedBy {
 		if (!topLevelException) {
 			sb.append("Caused by: ");
 		}
-		sb.append(exceptionClazz.getName());
+		sb.append(exceptionClazz.getFullyQualifiedName());
 		if (!Strings.isNullOrEmpty(message)) {
 			sb.append(": ").append(message);
 		}

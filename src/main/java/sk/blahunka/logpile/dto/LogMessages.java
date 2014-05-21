@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * A mapping of Message -> List(LogStatements)
+ */
 public class LogMessages {
 
 	private final Multimap<String, LogStatement> logsByMessage = ArrayListMultimap.create();
