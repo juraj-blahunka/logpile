@@ -1,10 +1,8 @@
 package sk.blahunka.logpile.bean;
 
 import com.google.common.collect.Ordering;
-import sk.blahunka.logpile.dto.LogErrorSummary;
-import sk.blahunka.logpile.dto.LogMessages;
 import sk.blahunka.logpile.LogPile;
-import sk.blahunka.logpile.ast.LogStatement;
+import sk.blahunka.logpile.dto.LogErrorSummary;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -15,7 +13,6 @@ import javax.servlet.http.Part;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 @Named
 @RequestScoped
@@ -37,7 +34,7 @@ public class IndexBean {
 		}
 
 		try (InputStream inputStream = file.getInputStream()) {
-			List<LogErrorSummary> listOfErrors = logPile(inputStream);
+			List<LogErrorSummary> listOfErrors = logPile.errors(inputStream);
 
 			errors = Ordering.from(LogErrorSummary.BY_NUMBER_OF_TOTAL_LOG_MESSAGES)
 					.reverse()
@@ -46,13 +43,6 @@ public class IndexBean {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private List<LogErrorSummary> logPile(InputStream inputStream) {
-		List<LogStatement> statements = logPile.parseLogStatemens(inputStream);
-		List<LogStatement> errors = logPile.filterErrors(statements);
-		Map<LogPile.StackTraceKey, LogMessages> uniqueErrors = logPile.errorsWithSameOrigin(errors);
-		return logPile.categorizeErrors(uniqueErrors);
 	}
 
 	public Part getFile() {

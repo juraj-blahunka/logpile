@@ -12,12 +12,26 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LogPile {
 
 	private LineParser lineParser = new LineParser();
 
-	public List<LogStatement> parseLogStatemens(InputStream input) {
+	/**
+	 * This is the API!
+	 *
+	 * @param inputStream
+	 * @return
+	 */
+	public List<LogErrorSummary> errors(InputStream inputStream) {
+		List<LogStatement> statements = parseLogStatemens(inputStream);
+		List<LogStatement> errors = filterErrors(statements);
+		Map<LogPile.StackTraceKey, LogMessages> uniqueErrors = errorsWithSameOrigin(errors);
+		return categorizeErrors(uniqueErrors);
+	}
+
+	protected List<LogStatement> parseLogStatemens(InputStream input) {
 		List<LogStatement> statements = new LinkedList<>();
 
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
@@ -81,17 +95,13 @@ public class LogPile {
 		return statements;
 	}
 
-	public List<LogStatement> filterErrors(List<LogStatement> statements) {
-		List<LogStatement> errors = new LinkedList<>();
-		for (LogStatement log : statements) {
-			if (log.hasCausedBy()) {
-				errors.add(log);
-			}
-		}
-		return errors;
+	protected List<LogStatement> filterErrors(List<LogStatement> statements) {
+		return statements.stream()
+				.filter(log -> log.hasCausedBy())
+				.collect(Collectors.toList());
 	}
 
-	public Map<StackTraceKey, LogMessages> errorsWithSameOrigin(List<LogStatement> errors) {
+	protected Map<StackTraceKey, LogMessages> errorsWithSameOrigin(List<LogStatement> errors) {
 		Map<StackTraceKey, LogMessages> result = new HashMap<>();
 
 		for (LogStatement log : errors) {
@@ -110,13 +120,13 @@ public class LogPile {
 				result.put(key, logs);
 			}
 
-			logs.arrange(log);
+			logs.put(log);
 		}
 
 		return result;
 	}
 
-	public List<LogErrorSummary> categorizeErrors(Map<StackTraceKey, LogMessages> errors) {
+	protected List<LogErrorSummary> categorizeErrors(Map<StackTraceKey, LogMessages> errors) {
 		LinkedList<LogErrorSummary> result = new LinkedList<>();
 
 		for (StackTraceKey key : errors.keySet()) {
@@ -133,7 +143,7 @@ public class LogPile {
 		return result;
 	}
 
-	public static class StackTraceKey {
+	protected static class StackTraceKey {
 
 		private final Clazz causedByException;
 

@@ -14,13 +14,13 @@ public class LogPileTest {
 	private static final String LINES_SIMPLE = "09:31:07,268 SEVERE [facelets.viewhandler] (http-0.0.0.0-8443-6) Error Rendering View[/spot.xhtml]\n" +
 			"java.lang.ArrayIndexOutOfBoundsException";
 
-	private static final String LINES_CAUSED_BY_IN_THE_END = "10:49:58,279 ERROR [org.jboss.seam.exception.Exceptions] (http-0.0.0.0-8443-8) handled and logged exception\n" +
+	private static final String ERROR_WITH_CAUSED_BY_IN_THE_END = "10:49:58,279 ERROR [org.jboss.seam.exception.Exceptions] (http-0.0.0.0-8443-8) handled and logged exception\n" +
 			"javax.servlet.ServletException\n" +
 			"	at javax.faces.webapp.FacesServlet.service(FacesServlet.java:277)\n" +
 			"	at java.lang.Thread.run(Thread.java:662)\n" +
 			"Caused by: java.lang.ArrayIndexOutOfBoundsException";
 
-	private static final String PRETTY_COMPLEX = "10:03:05,646 ERROR [org.jboss.seam.exception.Exceptions] (http-0.0.0.0-8443-3) handled and logged exception\n" +
+	private static final String COMPLEX_ERROR = "10:03:05,646 ERROR [org.jboss.seam.exception.Exceptions] (http-0.0.0.0-8443-3) handled and logged exception\n" +
 			"javax.servlet.ServletException: javax.el.ELException: /incl/mainmenu.xhtml @10,260 rendered=\"#{identity.loggedIn and identity.hasRole(applicationService.showRoleId('ADMINL')) eq false}\": org.jboss.seam.RequiredException: @In attribute requires non-null value: applicationService.entityManager\n" +
 			"	at javax.faces.webapp.FacesServlet.service(FacesServlet.java:277)\n" +
 			"	at com.sun.faces.lifecycle.Phase.doPhase(Phase.java:100)\n" +
@@ -36,13 +36,13 @@ public class LogPileTest {
 			"	at com.sun.facelets.el.TagValueExpression.getValue(TagValueExpression.java:71)\n" +
 			"	... 68 more";
 
-	private static final String STUPID_INFO = "03:37:42,533 INFO  [javax.enterprise.resource.webcontainer.jsf.lifecycle] (http-0.0.0.0-8443-15) WARNING: FacesMessage(s) have been enqueued, but may not have been displayed.\n" +
+	private static final String COMPLEX_INFO = "03:37:42,533 INFO  [javax.enterprise.resource.webcontainer.jsf.lifecycle] (http-0.0.0.0-8443-15) WARNING: FacesMessage(s) have been enqueued, but may not have been displayed.\n" +
 			"sourceId=mlb_reportTypeChooser[severity=(ERROR 2), summary=(mlb_reportTypeChooser: Error de Validación: Valor no es correcto.), detail=(mlb_reportTypeChooser: Error de Validación: Valor no es correcto.)]";
 
 	private LogPile logPile = new LogPile();
 
 	@Test
-	public void test2LineMessageIsASimpleLog() {
+	public void testSimpleTwoLineLog() {
 		LogStatement log = parseOneLogFromString(LINES_SIMPLE);
 
 		assertEquals("Error Rendering View[/spot.xhtml]", log.getMessage());
@@ -51,8 +51,8 @@ public class LogPileTest {
 	}
 
 	@Test
-	public void testFuck() {
-		LogStatement log = parseOneLogFromString(LINES_CAUSED_BY_IN_THE_END);
+	public void testLinesCausedByInTheEnd() {
+		LogStatement log = parseOneLogFromString(ERROR_WITH_CAUSED_BY_IN_THE_END);
 
 		assertEquals("handled and logged exception", log.getMessage());
 
@@ -64,15 +64,15 @@ public class LogPileTest {
 	}
 
 	@Test
-	public void reallyFuck() {
-		LogStatement log = parseOneLogFromString(PRETTY_COMPLEX);
+	public void testPrettyComplex() {
+		LogStatement log = parseOneLogFromString(COMPLEX_ERROR);
 
 		assertEquals(3, log.getCausedBies().size());
 	}
 
 	@Test
-	public void testStupidInfo() {
-		LogStatement log = parseOneLogFromString(STUPID_INFO);
+	public void testComplexInfo() {
+		LogStatement log = parseOneLogFromString(COMPLEX_INFO);
 
 		assertNull(log.getCausedBies());
 	}

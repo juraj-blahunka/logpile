@@ -5,94 +5,93 @@
 	  xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
 	  xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-<h:body>
+<body jsf:id="body">
 
-	<ui:composition template="WEB-INF/master.xhtml">
+<ui:composition template="WEB-INF/master.xhtml">
 
-		<ui:define name="content">
+	<ui:define name="content">
 
-			<c:if test="#{indexBean.dataPresent}">
+		<c:if test="#{indexBean.dataPresent}">
 
-				<h3>Parsed logs</h3>
+			<h3>Parsed logs</h3>
 
-				<!-- Stacktraces table -->
+			<!-- Stacktraces table -->
 
-				<table>
-					<thead>
+			<table>
+				<thead>
+				<tr>
+					<th>Total</th>
+					<th>Unique</th>
+					<th>Exception</th>
+					<th>Origin</th>
+					<th>Action</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<c:forEach items="#{indexBean.errors}" var="summary">
 					<tr>
-						<th>Total</th>
-						<th>Unique</th>
-						<th>Exception</th>
-						<th>Origin</th>
-						<th>Action</th>
+						<td>#{summary.logs.numberOfTotalLogMessages}</td>
+						<td>#{summary.logs.numberOfUniqueLogMessages}</td>
+						<td>
+							<strong>
+								<h:outputText value="#{summary.rootExceptionCause.simpleName} "
+											  rendered="#{summary.rootExceptionCause != null}"/>
+							</strong>
+						</td>
+						<td><code>#{summary.exceptionOriginAtLine.referenceRepresentation}</code></td>
+						<td>
+							<button class="show-hide-unique-message">Show</button>
+						</td>
 					</tr>
-					</thead>
-					<tbody>
 
-					<c:forEach items="#{indexBean.errors}" var="summary">
-						<tr>
-							<td>#{summary.logs.numberOfTotalLogMessages}</td>
-							<td>#{summary.logs.numberOfUniqueLogMessages}</td>
-							<td>
-								<strong>
-									<h:outputText value="#{summary.rootExceptionCause.simpleName} "
-												  rendered="#{summary.rootExceptionCause != null}"/>
-								</strong>
-							</td>
-							<td><code>#{summary.exceptionOriginAtLine.referenceRepresentation}</code></td>
-							<td>
-								<button class="show-hide-unique-message">Show</button>
-							</td>
-						</tr>
+					<tr class="unique-messages">
+						<td colspan="5">
+							<c:forEach items="#{summary.logs.uniqueMessageStrings}" var="message">
 
-						<tr class="unique-messages">
-							<td colspan="5">
-								<c:forEach items="#{summary.logs.uniqueMessageStrings}" var="message">
+								<pre><code>#{message}</code></pre>
 
-									<pre><code>#{message}</code></pre>
+								<a href="#"
+								   class="show-hide-full-stack-traces">+ Full stack traces (#{summary.logs.getNumberOfStatements(message)})</a>
 
-									<a href="#"
-									   class="show-hide-full-stack-traces">+ Full stack traces (#{summary.logs.getNumberOfStatements(message)})</a>
+								<div class="full-stack-traces">
+									<c:forEach items="#{summary.logs.first10LogStatements(message)}" var="statement">
+										<c:set var="stackTrace" value="#{statement.fullStackTrace}"/>
 
-									<div class="full-stack-traces">
-										<c:forEach items="#{summary.logs.first10LogStatements(message)}"
-												   var="statement">
-											<c:set var="stackTrace" value="#{statement.fullStackTrace}"/>
+										<div class="code-container">
+											<pre><code>#{stackTrace.lines}</code></pre>
+										</div>
+									</c:forEach>
+								</div>
 
-											<div class="code-container">
-												<pre><code>#{stackTrace.lines}</code></pre>
-											</div>
-										</c:forEach>
-									</div>
+							</c:forEach>
+						</td>
+					</tr>
 
-								</c:forEach>
-							</td>
-						</tr>
+				</c:forEach>
 
-					</c:forEach>
+				</tbody>
+			</table>
 
-					</tbody>
-				</table>
+		</c:if>
 
-			</c:if>
-
-			<script type="text/javascript">
-				$(function() {
-					$(".show-hide-unique-message").click(function() {
-						$(this).closest("tr").next().toggle()
-						$(this).text($(this).text() == "Show" ? "Hide" : "Show");
-						return false;
-					});
-					$(".show-hide-full-stack-traces").click(function() {
-						$(this).next(".full-stack-traces").toggle()
-						return false;
-					});
+		<script type="text/javascript">
+			$(function() {
+				$(".show-hide-unique-message").click(function() {
+					$(this).closest("tr").next().toggle()
+					$(this).text($(this).text() == "Show" ? "Hide" : "Show");
+					return false;
 				});
-			</script>
+				$(".show-hide-full-stack-traces").click(function() {
+					$(this).next(".full-stack-traces").toggle()
+					return false;
+				});
+			});
+		</script>
 
-		</ui:define>
+	</ui:define>
 
-	</ui:composition>
+</ui:composition>
 
-</h:body>
+</body>
 </html>

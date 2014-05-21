@@ -1,36 +1,35 @@
 package sk.blahunka.logpile.dto;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import sk.blahunka.logpile.ast.LogStatement;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LogMessages {
 
-	private final Multimap<String, LogStatement> byMessage = ArrayListMultimap.create();
+	private final Multimap<String, LogStatement> logsByMessage = ArrayListMultimap.create();
 
-	public void arrange(LogStatement log) {
-		byMessage.put(log.getMessage(), log);
+	public void put(LogStatement log) {
+		logsByMessage.put(log.getMessage(), log);
 	}
 
 	public int getNumberOfTotalLogMessages() {
-		return byMessage.size();
+		return logsByMessage.size();
 	}
 
 	public int getNumberOfUniqueLogMessages() {
-		return byMessage.keySet().size();
+		return logsByMessage.keySet().size();
 	}
 
 	public Set<String> getUniqueMessageStrings() {
-		return byMessage.keySet();
+		return logsByMessage.keySet();
 	}
 
 	public Collection<LogStatement> getLogStatements(String message) {
-		return byMessage.get(message);
+		return logsByMessage.get(message);
 	}
 
 	public int getNumberOfStatements(String message) {
@@ -38,8 +37,9 @@ public class LogMessages {
 	}
 
 	public Collection<LogStatement> first10LogStatements(String message) {
-		Collection<LogStatement> collection = byMessage.get(message);
-		return Lists.newCopyOnWriteArrayList(Iterables.limit(collection, 10));
+		return logsByMessage.get(message).stream()
+				.limit(10)
+				.collect(Collectors.toList());
 	}
 
 }

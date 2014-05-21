@@ -8,14 +8,9 @@ import java.util.Comparator;
 
 public class LogErrorSummary {
 
-	public static final Comparator<LogErrorSummary> BY_NUMBER_OF_TOTAL_LOG_MESSAGES = new Comparator<LogErrorSummary>() {
-		@Override
-		public int compare(LogErrorSummary o1, LogErrorSummary o2) {
-			return Ints.compare(
-					o1.getLogs().getNumberOfTotalLogMessages(),
-					o2.getLogs().getNumberOfTotalLogMessages());
-		}
-	};
+	public static final Comparator<LogErrorSummary> BY_NUMBER_OF_TOTAL_LOG_MESSAGES = (o1, o2) -> Ints.compare(
+			o1.getLogs().getNumberOfTotalLogMessages(),
+			o2.getLogs().getNumberOfTotalLogMessages());
 
 	private Clazz rootExceptionCause;
 	private AtLine exceptionOriginAtLine;
