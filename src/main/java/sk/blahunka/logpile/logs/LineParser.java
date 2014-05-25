@@ -1,6 +1,7 @@
-package sk.blahunka.logpile.ast;
+package sk.blahunka.logpile.logs;
 
 import org.joda.time.LocalTime;
+import sk.blahunka.logpile.logs.token.*;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +26,7 @@ public class LineParser {
 
 	private static final Pattern AT_LINE_PATTERN =
 			Pattern.compile("\\s*at " + // "  at "
-					JAVA_CLASS + "\\.(?<method>[a-zA-Z0-9_]*)" + // sun.java.Class.methodName
+					JAVA_CLASS + "\\.(?<method>[a-zA-Z0-9_$]*)" + // sun.java.Class.methodName
 					"\\((?<source>.+)\\)"); // (fileName.java:211)
 
 	private static final Pattern MORE_PATTERN =

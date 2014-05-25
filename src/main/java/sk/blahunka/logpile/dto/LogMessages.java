@@ -2,7 +2,7 @@ package sk.blahunka.logpile.dto;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import sk.blahunka.logpile.ast.LogStatement;
+import sk.blahunka.logpile.logs.token.LogStatement;
 
 import java.util.Collection;
 import java.util.Set;

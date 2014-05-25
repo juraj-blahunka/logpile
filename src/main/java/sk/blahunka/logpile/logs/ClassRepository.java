@@ -1,4 +1,6 @@
-package sk.blahunka.logpile.ast;
+package sk.blahunka.logpile.logs;
+
+import sk.blahunka.logpile.logs.token.Clazz;
 
 import java.util.HashMap;
 import java.util.Map;

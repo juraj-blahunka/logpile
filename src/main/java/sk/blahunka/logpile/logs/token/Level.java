@@ -1,4 +1,4 @@
-package sk.blahunka.logpile.ast;
+package sk.blahunka.logpile.logs.token;
 
 // TODO use slf4j Level enum
 public enum Level {

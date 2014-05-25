@@ -1,22 +1,20 @@
-package sk.blahunka.logpile;
+package sk.blahunka.logpile.logs;
 
-import sk.blahunka.logpile.ast.*;
 import sk.blahunka.logpile.dto.LogErrorSummary;
 import sk.blahunka.logpile.dto.LogMessages;
+import sk.blahunka.logpile.logs.token.AtLine;
+import sk.blahunka.logpile.logs.token.CausedBy;
+import sk.blahunka.logpile.logs.token.Clazz;
+import sk.blahunka.logpile.logs.token.LogStatement;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class LogPile {
-
-	private LineParser lineParser = new LineParser();
+public class LogsService {
 
 	/**
 	 * This is the API!
@@ -25,75 +23,14 @@ public class LogPile {
 	 * @return
 	 */
 	public List<LogErrorSummary> errors(InputStream inputStream) {
-		List<LogStatement> statements = parseLogStatemens(inputStream);
+		TokenParser tokenParser = new TokenParser();
+		List<LogStatement> statements = tokenParser.parseLogStatemens(inputStream);
+
 		List<LogStatement> errors = filterErrors(statements);
-		Map<LogPile.StackTraceKey, LogMessages> uniqueErrors = errorsWithSameOrigin(errors);
+		Map<LogsService.StackTraceKey, LogMessages> uniqueErrors = errorsWithSameOrigin(errors);
 		return categorizeErrors(uniqueErrors);
 	}
 
-	protected List<LogStatement> parseLogStatemens(InputStream input) {
-		List<LogStatement> statements = new LinkedList<>();
-
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
-
-			String line = reader.readLine();
-			LogStatement currentLog = null;
-
-			while (line != null) {
-				LogStatement logStatement = lineParser.parseLogStatement(line);
-				if (logStatement != null) {
-					statements.add(logStatement);
-					currentLog = logStatement;
-
-					line = reader.readLine();
-					continue;
-				}
-
-				if (currentLog == null) {
-					// TODO we have a problem here, just skipping line for now
-					line = reader.readLine();
-					continue;
-				}
-
-				CausedBy causedBy = lineParser.parseCausedBy(line, currentLog);
-				if (causedBy != null) {
-					currentLog.addCausedBy(causedBy);
-
-					line = reader.readLine();
-					continue;
-				}
-
-				if (currentLog != null) {
-					AtLine atLine = lineParser.parseAtLine(line);
-					if (atLine != null) {
-						// assert that currentLog != null
-						if (!currentLog.hasCausedBy()) {
-							currentLog.addCausedBy(new CausedBy(null, null, true));
-						}
-						currentLog.firstCausedBy().addAtLine(atLine);
-
-						line = reader.readLine();
-						continue;
-					}
-
-
-					// othwerwise just extend the log message
-					if (!lineParser.matchesMore(line)) {
-						currentLog.addMultiLineMessage(line);
-					}
-				} else {
-					// TODO what to do with such a line
-				}
-
-				line = reader.readLine();
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return statements;
-	}
 
 	protected List<LogStatement> filterErrors(List<LogStatement> statements) {
 		return statements.stream()
@@ -105,7 +42,7 @@ public class LogPile {
 		Map<StackTraceKey, LogMessages> result = new HashMap<>();
 
 		for (LogStatement log : errors) {
-			CausedBy causedBy = log.firstCausedBy();
+			CausedBy causedBy = log.lastCausedBy();
 
 			Clazz causedByClazz = causedBy.getExceptionClazz();
 			AtLine atLine = causedBy.getAtLines().size() > 0

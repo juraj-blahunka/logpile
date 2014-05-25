@@ -3,7 +3,8 @@ package sk.blahunka.logpile;
 import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
-import sk.blahunka.logpile.ast.*;
+import sk.blahunka.logpile.logs.LineParser;
+import sk.blahunka.logpile.logs.token.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -13,6 +14,9 @@ public class LineParserTest {
 
 	private static final String CAUSED_BY =
 			"Caused by: javax.ejb.EJBTransactionRolledbackException";
+
+	private static final String CAUSED_BY_ONLY_CLASS =
+			"javax.servlet.ServletException";
 
 	private static final String CAUSED_BY_LONG =
 			"Caused by: javax.faces.FacesException: #{facilityChooserAction.facilitySelected}: javax.ejb.EJBTransactionRolledbackException";
@@ -32,8 +36,9 @@ public class LineParserTest {
 	private static final String MORE_LINE =
 			"\t... 67 more";
 
-	private LineParser lineParser = new LineParser();
+	private static final String CAUSED_BY_WITH_DOUBLE_PATTERN = "Caused by: javax.el.ELException: /incl/mainmenu.xhtml @10,260 rendered=\"#{identity.loggedIn and identity.hasRole(applicationService.showRoleId('ADMIN')) eq false}\": org.jboss.seam.RequiredException: @In attribute requires non-null value: applicationService.entityManager";
 
+	private LineParser lineParser = new LineParser();
 	private LogStatement currentLogStatement;
 
 	@Before
@@ -58,6 +63,22 @@ public class LineParserTest {
 	}
 
 	@Test
+	public void testCausedByOnlyClass() {
+		CausedBy causedBy = lineParser.parseCausedBy(CAUSED_BY_ONLY_CLASS, currentLogStatement);
+
+		assertEquals("javax.servlet.ServletException", causedBy.getExceptionClazz().getFullyQualifiedName());
+		assertEquals("", causedBy.getMessage());
+	}
+
+	@Test
+	public void testLongLineWithDoubleRegexPattern() {
+		CausedBy causedBy = lineParser.parseCausedBy(CAUSED_BY_WITH_DOUBLE_PATTERN, currentLogStatement);
+
+		assertEquals("javax.el.ELException", causedBy.getExceptionClazz().getFullyQualifiedName());
+		assertEquals("/incl/mainmenu.xhtml @10,260 rendered=\"#{identity.loggedIn and identity.hasRole(applicationService.showRoleId('ADMIN')) eq false}\": org.jboss.seam.RequiredException: @In attribute requires non-null value: applicationService.entityManager", causedBy.getMessage());
+	}
+
+	@Test
 	public void parseLogStatement_INFO() {
 		LogStatement log = lineParser.parseLogStatement(INFO_LOG);
 
@@ -73,7 +94,7 @@ public class LineParserTest {
 
 		assertNotNull(log);
 		assertEquals(Level.ERROR, log.getLevel());
-		// TODO finish test
+		// TODO finish testSimpleInfoWithException
 	}
 
 	@Test
@@ -82,7 +103,7 @@ public class LineParserTest {
 
 		assertNotNull(log);
 		assertEquals(Level.SEVERE, log.getLevel());
-		// TODO finish test
+		// TODO finish testSimpleInfoWithException
 	}
 
 	@Test

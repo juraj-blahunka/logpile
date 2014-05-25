@@ -1,4 +1,4 @@
-package sk.blahunka.logpile.ast;
+package sk.blahunka.logpile.logs.token;
 
 import java.util.regex.Pattern;
 

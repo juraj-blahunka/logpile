@@ -1,4 +1,4 @@
-package sk.blahunka.logpile.ast;
+package sk.blahunka.logpile.logs.token;
 
 public class AtLine {
 
@@ -56,7 +56,6 @@ public class AtLine {
 				"clazz=" + clazz +
 				", method='" + method + '\'' +
 				", source='" + source + '\'' +
-				"} " + super.toString();
+				'}';
 	}
-
 }

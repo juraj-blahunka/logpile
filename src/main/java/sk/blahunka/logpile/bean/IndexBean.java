@@ -1,8 +1,8 @@
 package sk.blahunka.logpile.bean;
 
 import com.google.common.collect.Ordering;
-import sk.blahunka.logpile.LogPile;
 import sk.blahunka.logpile.dto.LogErrorSummary;
+import sk.blahunka.logpile.logs.LogsService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -19,7 +19,7 @@ import java.util.List;
 public class IndexBean {
 
 	@Inject
-	LogPile logPile;
+	LogsService logsService;
 
 	@Inject
 	FacesContext facesContext;
@@ -34,7 +34,7 @@ public class IndexBean {
 		}
 
 		try (InputStream inputStream = file.getInputStream()) {
-			List<LogErrorSummary> listOfErrors = logPile.errors(inputStream);
+			List<LogErrorSummary> listOfErrors = logsService.errors(inputStream);
 
 			errors = Ordering.from(LogErrorSummary.BY_NUMBER_OF_TOTAL_LOG_MESSAGES)
 					.reverse()

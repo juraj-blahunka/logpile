@@ -1,11 +1,14 @@
 package sk.blahunka.logpile.dto;
 
 import com.google.common.primitives.Ints;
-import sk.blahunka.logpile.ast.AtLine;
-import sk.blahunka.logpile.ast.Clazz;
+import sk.blahunka.logpile.logs.token.AtLine;
+import sk.blahunka.logpile.logs.token.Clazz;
 
 import java.util.Comparator;
 
+/**
+ * An aggregate for a group of exceptions, which come from the same {@link sk.blahunka.logpile.logs.token.AtLine}
+ */
 public class LogErrorSummary {
 
 	public static final Comparator<LogErrorSummary> BY_NUMBER_OF_TOTAL_LOG_MESSAGES = (o1, o2) -> Ints.compare(
