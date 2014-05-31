@@ -1,8 +1,8 @@
 package sk.blahunka.logpile.logs.token;
 
-import org.joda.time.LocalTime;
 import sk.blahunka.logpile.dto.FullStackTrace;
 
+import java.time.LocalTime;
 import java.util.LinkedList;
 import java.util.List;
 

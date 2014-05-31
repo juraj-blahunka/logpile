@@ -1,8 +1,8 @@
 package sk.blahunka.logpile.logs;
 
-import org.joda.time.LocalTime;
 import sk.blahunka.logpile.logs.token.*;
 
+import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,7 +12,7 @@ public class LineParser {
 
 	// TODO @blj externalize regexes (GUI)
 	private static final Pattern LOG_MESSAGE_PATTERN =
-			Pattern.compile("(?<time>\\d{2}:\\d{2}:\\d{2},\\d{3})\\s+" + // 01:55:16,276
+			Pattern.compile("(?<time>\\d{2}:\\d{2}:\\d{2}),\\d{3}\\s+" + // 01:55:16, milliseconds are ignored (,276)
 					"(?<level>[a-zA-Z]*)\\s+" + // INFO
 					"\\[" + JAVA_CLASS + "\\]\\s+" + // [com.web.seam.action.AuthenticatorImpl]
 					"\\((.*)\\)\\s+" + // (http-0.0.0.0-8443-1)

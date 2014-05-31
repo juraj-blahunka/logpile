@@ -1,10 +1,11 @@
 package sk.blahunka.logpile;
 
-import org.joda.time.LocalTime;
 import org.junit.Before;
 import org.junit.Test;
 import sk.blahunka.logpile.logs.LineParser;
 import sk.blahunka.logpile.logs.token.*;
+
+import java.time.LocalTime;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -82,7 +83,7 @@ public class LineParserTest {
 	public void parseLogStatement_INFO() {
 		LogStatement log = lineParser.parseLogStatement(INFO_LOG);
 
-		assertEquals(new LocalTime(1, 55, 16, 276), log.getTime());
+		assertEquals(LocalTime.of(1, 55, 16), log.getTime());
 		assertEquals(Level.INFO, log.getLevel());
 		assertEquals(new Clazz("com.web.seam.action.AuthenticatorImpl"), log.getClazz());
 		assertEquals("Login successfull for user: info@someone.com", log.getMessage());
